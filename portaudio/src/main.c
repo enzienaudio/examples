@@ -11,7 +11,7 @@
  * the contents of a file, process it through a heavy patch and send it to the
  * output. 
  * 
- * Expected data I/O format here are interleaved short values.
+ * Expected data I/O format here are interleaved float 32bit values.
  */
 
 #include <stdio.h>
