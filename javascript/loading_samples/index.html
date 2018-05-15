@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Heavy Example - Loading Samples</title>
+    <style>
+      #playhead {
+        position: absolute;
+        background-color: black;
+        overflow: hidden;
+        left: 0px;
+        width: 5px;
+      }
+
+      .value {
+        display: inline-block;
+      }
+
+      .slider {
+        display: inline-block;
+      }
+
+    </style>
+    <script type="application/javascript" src="./js/samplePlayerLib.min.js"></script>
+    <script type="text/javascript">
+
+      var isPlaying = false;
+      var webAudioContext = null;
+      var webAudioProcessor = null;
+      var samplePlayer = null;
+
+      window.onload = function(e) {
+        webAudioContext = new (window.AudioContext || window.webkitAudioContext);
+
+        blockSize = 2048
+
+        samplePlayer = new samplePlayerLib({
+          sampleRate: webAudioContext.sampleRate,
+          blockSize: blockSize,
+          printHook: hvPrintHook,
+          sendHook: hvSendHook
+        });
+
+        webAudioProcessor = webAudioContext.createScriptProcessor(
+          blockSize,
+          samplePlayer.getNumInputChannels(),
+          // Note: make sure there is at least one output channel specified so that
+          // we can process patches that have no i/o objects (i.e. control only)
+          Math.max(samplePlayer.getNumOutputChannels(), 1)
+        );
+
+        webAudioProcessor.onaudioprocess = function(e) { samplePlayer.process(e); }
+
+        loadAudio("test.mp3");
+
+        setSpeed(1);
+      };
+
+      function hvPrintHook(message) {
+        console.log(message);
+      };
+
+      function hvSendHook(message) {
+        console.log(message);
+      };
+
+      function start() {
+        webAudioProcessor.connect(webAudioContext.destination);
+        document.getElementById("transportButton").textContent = "Pause";
+        isPlaying = true;
+      };
+
+      function stop() {
+        webAudioProcessor.disconnect(webAudioContext.destination);
+        document.getElementById("transportButton").textContent = "Play";
+        isPlaying = false;
+      };
+
+      function toggleTransport(element) {
+        (isPlaying) ? stop() : start();
+      };
+
+      function setSpeed(value) {
+        document.getElementById("display_speed").textContent = Number(value*100).toFixed(0) + "%";
+        samplePlayer.sendFloatToReceiver("speed", value);
+
+      };
+
+
+      // Sample loading
+      function loadAudio(url) {
+        var rq = new XMLHttpRequest();
+        rq.open("GET", url, true);
+        rq.responseType = "arraybuffer";
+        rq.send();
+
+        rq.onload = function() {
+          var audioData = rq.response;
+          webAudioContext.decodeAudioData(audioData, function(buffer){
+            samplePlayer.fillTableWithFloatBuffer("test", buffer.getChannelData(0));
+            //samplePlayer.sendFloatToReceiver("table-size", buffer.getChannelData(0).length);
+          });
+        }
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <div>
+      <div>
+        <button type="button" id="transportButton" onclick="toggleTransport(this);">Play</button>
+        <p>
+        <div>
+          <input class="slider" id="slider_speed" type="range" min="0.25" max="2" step="0.01" value="1.0" onchange="setSpeed(value);" oninput="setSpeed(value)">Speed:</input>
+          <div class="value" id="display_speed"></div>
+        </div>
+      </div>
+
+      <div>
+        <p style="padding: 10px;"><em>powered by </em><a href="https://enzienaudio.com"><strong>Heavy</strong></a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>chip</title>
+
+    <!-- Generated javascript library includes -->
+    <script type="application/javascript" src="./js/chipLib.min.js"></script>
+    <style>
+    .cell {
+      display: table-cell;
+      padding-right: 10px;
+    }
+
+    .row {
+      display: table-row;
+    }
+
+    </style>
+
+    <script type="text/javascript">
+      var isPlaying = false;
+      var webAudioContext = null;
+      var webAudioProcessor = null;
+      var chip = null;
+
+      window.onload = function(e) {
+
+        webAudioContext = new (window.AudioContext || window.webkitAudioContext);
+
+        blockSize = 2048;
+
+        chip = new chipLib({
+          sampleRate: webAudioContext.sampleRate,
+          blockSize: blockSize,
+          printHook: hvPrintHook,
+          sendHook: hvSendHook
+        });
+
+        webAudioProcessor = webAudioContext.createScriptProcessor(
+          blockSize,
+          chip.getNumInputChannels(),
+          // Note: make sure there is at least one output channel specified so that
+          // we can process patches that have no i/o objects (i.e. control only)
+          Math.max(chip.getNumOutputChannels(), 1)
+        );
+
+        webAudioProcessor.onaudioprocess = function(e) { chip.process(e); }
+
+        isPlaying = false;
+
+        updateSlider_oscfreq(Math.random());
+        updateSlider_oscdecay(Math.random());
+        updateSlider_oscattack(Math.random());
+        updateSlider_noisesweep(Math.random());
+        updateSlider_bitcrush(Math.random());
+        updateSlider_noiseamount(Math.random());
+        updateSlider_noiseattack(Math.random());
+        updateSlider_flangerdepth(Math.random());
+        updateSlider_oscamount(Math.random());
+        updateSlider_flangerfb(Math.random());
+        updateSlider_noisedecay(Math.random());
+        updateSlider_flangerspeed(Math.random());
+
+        start();
+      };
+
+      function hvPrintHook(message) {
+        console.log(message);
+      };
+
+      function hvSendHook(message) {
+        console.log(message);
+      };
+
+      function start() {
+        webAudioProcessor.connect(webAudioContext.destination);
+        isPlaying = true;
+      };
+
+      function stop() {
+        webAudioProcessor.disconnect(webAudioContext.destination);
+        isPlaying = false;
+      };
+
+      function toggleTransport(element) {
+        (isPlaying) ? stop() : start();
+      };
+
+      function randomiseParameters() {
+        updateSlider_oscfreq(Math.random());
+        updateSlider_oscdecay(Math.random());
+        updateSlider_oscattack(Math.random());
+        updateSlider_noisesweep(Math.random());
+        updateSlider_bitcrush(Math.random());
+        updateSlider_noiseamount(Math.random());
+        updateSlider_noiseattack(Math.random());
+        updateSlider_flangerdepth(Math.random());
+        updateSlider_oscamount(Math.random());
+        updateSlider_flangerfb(Math.random());
+        updateSlider_noisedecay(Math.random());
+        updateSlider_flangerspeed(Math.random());
+
+        trigger();
+      }
+
+      function trigger() {
+        chip.sendBangToReceiver("trigger");
+      };
+
+
+      // Generated Parameter Update Methods
+
+      function updateSlider_oscfreq(value) {
+        document.getElementById("display_oscfreq").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_oscfreq").value = value;
+        chip.sendFloatToReceiver("osc-freq", value);
+      };
+
+      function updateSlider_oscdecay(value) {
+        document.getElementById("display_oscdecay").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_oscdecay").value = value;
+        chip.sendFloatToReceiver("osc-decay", value);
+      };
+
+      function updateSlider_oscattack(value) {
+        document.getElementById("display_oscattack").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_oscattack").value = value;
+        chip.sendFloatToReceiver("osc-attack", value);
+      };
+
+      function updateSlider_noisesweep(value) {
+        document.getElementById("display_noisesweep").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_noisesweep").value = value;
+        chip.sendFloatToReceiver("noise-sweep", value);
+      };
+
+      function updateSlider_bitcrush(value) {
+        document.getElementById("display_bitcrush").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_bitcrush").value = value;
+        chip.sendFloatToReceiver("bitcrush", value);
+      };
+
+      function updateSlider_noiseamount(value) {
+        document.getElementById("display_noiseamount").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_noiseamount").value = value;
+        chip.sendFloatToReceiver("noise-amount", value);
+      };
+
+      function updateSlider_noiseattack(value) {
+        document.getElementById("display_noiseattack").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_noiseattack").value = value;
+        chip.sendFloatToReceiver("noise-attack", value);
+      };
+
+      function updateSlider_flangerdepth(value) {
+        document.getElementById("display_flangerdepth").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_flangerdepth").value = value;
+        chip.sendFloatToReceiver("flanger-depth", value);
+      };
+
+      function updateSlider_oscamount(value) {
+        document.getElementById("display_oscamount").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_oscamount").value = value;
+        chip.sendFloatToReceiver("osc-amount", value);
+      };
+
+      function updateSlider_flangerfb(value) {
+        document.getElementById("display_flangerfb").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_flangerfb").value = value;
+        chip.sendFloatToReceiver("flanger-fb", value);
+      };
+
+      function updateSlider_noisedecay(value) {
+        document.getElementById("display_noisedecay").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_noisedecay").value = value;
+        chip.sendFloatToReceiver("noise-decay", value);
+      };
+
+      function updateSlider_flangerspeed(value) {
+        document.getElementById("display_flangerspeed").textContent = Number(value).toFixed(2);
+        document.getElementById("slider_flangerspeed").value = value;
+        chip.sendFloatToReceiver("flanger-speed", value);
+      };
+    </script>
+  </head>
+
+  <body>
+    <div>
+
+      <div>
+        <button style="padding: 10px;" type="button" id="playButton" onclick="trigger();">Play</button>
+        <button style="padding: 10px;" type="button" id="randomiseButton" onclick="randomiseParameters();">Randomise</button>
+      </div>
+
+      <div class="table"> <!-- Generated Parameters -->
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_oscfreq" type="range" min="0.0" max="1.0" step="0.01" value="0.3" onchange="updateSlider_oscfreq(value); trigger();" oninput="updateSlider_oscfreq(value)">
+          </div>
+          <div class="cell" id="display_oscfreq"></div>
+          <div class="cell"><strong>osc-freq</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_oscattack" type="range" min="0.0" max="1.0" step="0.01" value="0.0" onchange="updateSlider_oscattack(value); trigger();" oninput="updateSlider_oscattack(value)">
+          </div>
+          <div class="cell" id="display_oscattack"></div>
+          <div class="cell"><strong>osc-attack</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_oscdecay" type="range" min="0.0" max="1.0" step="0.01" value="0.66" onchange="updateSlider_oscdecay(value); trigger();" oninput="updateSlider_oscdecay(value)">
+          </div>
+          <div class="cell" id="display_oscdecay"></div>
+          <div class="cell"><strong>osc-decay</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_oscamount" type="range" min="0.0" max="1.0" step="0.01" value="0.8" onchange="updateSlider_oscamount(value); trigger();" oninput="updateSlider_oscamount(value)">
+          </div>
+          <div class="cell" id="display_oscamount"></div>
+          <div class="cell"><strong>osc-amount</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_noiseattack" type="range" min="0.0" max="1.0" step="0.01" value="0.17" onchange="updateSlider_noiseattack(value); trigger();" oninput="updateSlider_noiseattack(value)">
+          </div>
+          <div class="cell" id="display_noiseattack"></div>
+          <div class="cell"><strong>noise-attack</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_noisedecay" type="range" min="0.0" max="1.0" step="0.01" value="0.56" onchange="updateSlider_noisedecay(value); trigger();" oninput="updateSlider_noisedecay(value)">
+          </div>
+          <div class="cell" id="display_noisedecay"></div>
+          <div class="cell"><strong>noise-decay</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_noisesweep" type="range" min="0.0" max="1.0" step="0.01" value="0.36" onchange="updateSlider_noisesweep(value); trigger();" oninput="updateSlider_noisesweep(value)">
+          </div>
+          <div class="cell" id="display_noisesweep"></div>
+          <div class="cell"><strong>noise-sweep</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_noiseamount" type="range" min="0.0" max="1.0" step="0.01" value="0.54" onchange="updateSlider_noiseamount(value); trigger();" oninput="updateSlider_noiseamount(value)">
+          </div>
+          <div class="cell" id="display_noiseamount"></div>
+          <div class="cell"><strong>noise-amount</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_flangerspeed" type="range" min="0.0" max="1.0" step="0.01" value="0.61" onchange="updateSlider_flangerspeed(value); trigger();" oninput="updateSlider_flangerspeed(value)">
+          </div>
+          <div class="cell" id="display_flangerspeed"></div>
+          <div class="cell"><strong>flanger-speed</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_flangerdepth" type="range" min="0.0" max="1.0" step="0.01" value="1.0" onchange="updateSlider_flangerdepth(value); trigger();" oninput="updateSlider_flangerdepth(value)">
+          </div>
+          <div class="cell" id="display_flangerdepth"></div>
+          <div class="cell"><strong>flanger-depth</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_flangerfb" type="range" min="0.0" max="1.0" step="0.01" value="0.94" onchange="updateSlider_flangerfb(value); trigger();" oninput="updateSlider_flangerfb(value)">
+          </div>
+          <div class="cell" id="display_flangerfb"></div>
+          <div class="cell"><strong>flanger-fb</strong></div>
+        </div>
+
+        <div class="row">
+          <div class="cell">
+            <input id="slider_bitcrush" type="range" min="0.0" max="1.0" step="0.01" value="0.92" onchange="updateSlider_bitcrush(value); trigger();" oninput="updateSlider_bitcrush(value)">
+          </div>
+          <div class="cell" id="display_bitcrush"></div>
+          <div class="cell"><strong>bitcrush</strong></div>
+        </div>
+      </div>
+
+      <div>
+        <p style="padding: 10px;"><em>powered by </em><a href="https://enzienaudio.com"><strong>Heavy</strong></a></p>
+        <p>Source on <a href="https://github.com/enzienaudio/examples/tree/master/javascript/chip"> github</a></p>
+      </div>
+
+    </div>
+  </body>
+</html>

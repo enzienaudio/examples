@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>samplePlayer</title>
+
+    <!-- Generated javascript library includes -->
+    <script type="application/javascript" src="./samplePlayerLib.min.js"></script>
+    <style>
+    .cell {
+      display: table-cell;
+      padding-right: 10px;
+    }
+
+    .row {
+      display: table-row;
+    }
+
+    </style>
+
+    <script type="text/javascript">
+      var isPlaying = false;
+      var webAudioContext = null;
+      var webAudioProcessor = null;
+      var samplePlayer = null;
+
+      window.onload = function(e) {
+
+        webAudioContext = new (window.AudioContext || window.webkitAudioContext);
+
+        blockSize = 2048
+
+        samplePlayer = new samplePlayerLib({
+          sampleRate: webAudioContext.sampleRate,
+          blockSize: blockSize,
+          printHook: hvPrintHook,
+          sendHook: hvSendHook
+        });
+
+        webAudioProcessor = webAudioContext.createScriptProcessor(
+          blockSize,
+          samplePlayer.getNumInputChannels(),
+          // Note: make sure there is at least one output channel specified so that
+          // we can process patches that have no i/o objects (i.e. control only)
+          Math.max(samplePlayer.getNumOutputChannels(), 1)
+        );
+
+        webAudioProcessor.onaudioprocess = function(e) { samplePlayer.process(e); }
+
+        document.getElementById("transportButton").textContent = "Play";
+        isPlaying = false;
+
+        // Generated Parameter Display Initialisations
+        updateSlider_speed(1.0);
+        updateSlider_table_size(0.0);
+      };
+
+      function hvPrintHook(message) {
+        console.log(message);
+      };
+
+      function hvSendHook(message) {
+        console.log(message);
+      };
+
+      function start() {
+        webAudioProcessor.connect(webAudioContext.destination);
+        document.getElementById("transportButton").textContent = "Pause";
+        isPlaying = true;
+      };
+
+      function stop() {
+        webAudioProcessor.disconnect(webAudioContext.destination);
+        document.getElementById("transportButton").textContent = "Play";
+        isPlaying = false;
+      };
+
+      function toggleTransport(element) {
+        (isPlaying) ? stop() : start();
+      };
+
+      // Generated Parameter Update Methods
+      
+      function updateSlider_speed(value) {
+        document.getElementById("display_speed").textContent = Number(value).toFixed(2);
+        samplePlayer.sendFloatToReceiver("speed", value);
+      };
+      
+      function updateSlider_table_size(value) {
+        document.getElementById("display_table_size").textContent = Number(value).toFixed(2);
+        samplePlayer.sendFloatToReceiver("table-size", value);
+      };
+      
+    </script>
+  </head>
+
+  <body>
+    <div>
+
+      <div>
+        <button style="padding: 10px;" type="button" id="transportButton" onclick="toggleTransport(this);"/>
+      </div>
+
+      <div class="table"> <!-- Generated Parameters -->
+        
+        <div class="row">
+          <div class="cell">
+            <input id="slider_speed" type="range" min="0.0" max="2.0" step="0.01" value="1.0" onchange="updateSlider_speed(value);" oninput="updateSlider_speed(value)">
+          </div>
+          <div class="cell" id="display_speed"></div>
+          <div class="cell"><strong>speed</strong></div>
+        </div>
+        
+        <div class="row">
+          <div class="cell">
+            <input id="slider_table_size" type="range" min="0.0" max="1000000.0" step="0.01" value="0.0" onchange="updateSlider_table_size(value);" oninput="updateSlider_table_size(value)">
+          </div>
+          <div class="cell" id="display_table_size"></div>
+          <div class="cell"><strong>table-size</strong></div>
+        </div>
+        
+      </div>
+
+      <div>
+        <p style="padding: 10px;"><em>powered by </em><a href="https://enzienaudio.com"><strong>Heavy</strong></a></p>
+      </div>
+
+    </div>
+  </body>
+</html>
