@@ -50,6 +50,7 @@ static int paCallback(const void *input, void *output,
   // process buffers through heavy patch
   // expected data format here is interleaved float 32 bit buffers
   // i.e: L R L R L R ...
+  // Note: though for this example the input audio file (and patch) are in mono
   hv_processInlineInterleaved(data->hvContext, in, out, (int) numFramesToRead);
 
   // increment read index
