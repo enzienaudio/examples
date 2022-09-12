@@ -1,10 +1,28 @@
-# Heavy Integration Examples
+# Heavy Example code
 ---
-#####[Javascript - Loading Samples](https://github.com/enzienaudio/examples/tree/master/javascript/loading_samples)
+This repository contains Heavy compatible Pure Data patches that are used by different integration examples.
 
-* Load samples into existing tables in the patch via the javascript interface.
+Here you find only the DSP code, the specific integrations each have their own repositories:
 
-#####[PortAudio](https://github.com/enzienaudio/examples/tree/master/portaudio)
+* [DPF]() #todo
+* [Javascript]() #todo
+* [OWL]() #todo
+* [Daisy]() #todo
+* [Unity]() #todo
 
-* Shows how to set up a PortAudio wrapper and audio callback.
-* Example of using the short (16 bit integer) process method.
+## Audio Effects
+
+* Delay: Simple
+* Delay: Advanced #todo
+* Distortion: Simple #todo
+* Distortion: Advanced #todo
+
+## Audio Synths
+
+* Substractive Mono Synth #todo
+* Substractive Poly Synth #todo
+
+## MIDI
+
+* Generative Sequencer #todo
+* Note Manipulation #todo
